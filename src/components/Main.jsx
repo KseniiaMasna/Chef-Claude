@@ -1,18 +1,25 @@
 import { useState } from "react"
+import Markdown from 'react-markdown'
+import { getRecipeFromMistral } from "../ai"
 import Recipe from "./Recipe"
 import IngredientsList from "./IngredientsList"
 
-const Main = () => {
+
+const Main = () => {    
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN;    
+
+
     const [ingredients, setIngredients] = useState([])
-    const [isRecipe, setIsRecipe] = useState(false)
+    const [recipe, setRecipe] = useState()
 
     const handleSubmit = (formData) => {                
         const newIngredient = formData.get('ingredient')
         setIngredients(prevIngredients => [...prevIngredients, <li key={newIngredient}>{newIngredient}</li>])
     }
 
-    const showRecipe = () => {
-        setIsRecipe(true)
+    const showRecipe = async () => {        
+        const recipeMarkdown = await getRecipeFromMistral(ingredients)        
+        setRecipe(recipeMarkdown)        
     }
 
     return (
@@ -27,10 +34,10 @@ const Main = () => {
                 <button>Add ingredient</button>
             </form>
             {
-                ingredients.length !== 0 && <IngredientsList ingredients={ingredients} showRecipe={showRecipe}/>
+                ingredients.length !== 0 && <IngredientsList ingredients={ingredients} showRecipe={showRecipe} />
             }
             {
-                isRecipe && <Recipe />
+                recipe && <Recipe recipe={recipe}/>
             }               
         </main>
     )
