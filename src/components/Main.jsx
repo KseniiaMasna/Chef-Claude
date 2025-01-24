@@ -1,18 +1,23 @@
 import { useState } from "react"
+import Recipe from "./Recipe"
+import IngredientsList from "./IngredientsList"
 
 const Main = () => {
     const [ingredients, setIngredients] = useState([])
+    const [isRecipe, setIsRecipe] = useState(false)
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget)
+    const handleSubmit = (formData) => {                
         const newIngredient = formData.get('ingredient')
         setIngredients(prevIngredients => [...prevIngredients, <li key={newIngredient}>{newIngredient}</li>])
     }
 
+    const showRecipe = () => {
+        setIsRecipe(true)
+    }
+
     return (
         <main>
-            <form onSubmit={handleSubmit} className="add-ingredient-form">
+            <form action={handleSubmit} className="add-ingredient-form">
                 <input 
                     type="text" 
                     aria-label="Add ingredient"
@@ -21,9 +26,12 @@ const Main = () => {
                 />
                 <button>Add ingredient</button>
             </form>
-            <ul>
-                {ingredients}
-            </ul>                    
+            {
+                ingredients.length !== 0 && <IngredientsList ingredients={ingredients} showRecipe={showRecipe}/>
+            }
+            {
+                isRecipe && <Recipe />
+            }               
         </main>
     )
 }
